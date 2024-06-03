@@ -1,36 +1,37 @@
 import {expect} from 'chai';
-import {generateHmacSignature, verifyHmacSignature} from '../../services/signatureService';
+import {SignatureService} from '../../services/signatureService';
+import {HashAlgorithm, HashAlgorithmSha256} from "../../services/hashAlgorithm";
+import {EncryptionAlgorithm} from "../../services/encryptionAlgorithm";
 
 describe('HMAC Service', () => {
-    const secret = 'mysecret';
+    let signatureService: SignatureService;
+
+    before(() => {
+        signatureService = new SignatureService(new HashAlgorithmSha256());
+    });
 
     describe('generateHmacSignature', () => {
         it('should generate a valid HMAC signature', () => {
             const payload = {foo: 'bar'};
-            const signature = generateHmacSignature(payload, secret);
+            const signature = signatureService.generateHmacSignature(payload);
 
             expect(signature).to.be.a('string');
             expect(signature).to.have.lengthOf(64); // HMAC-SHA256 signature length
         });
 
         it('should throw an error if payload is null or undefined', () => {
-            expect(() => generateHmacSignature(null, secret)).to.throw('Payload cannot be null or undefined');
-            expect(() => generateHmacSignature(undefined, secret)).to.throw('Payload cannot be null or undefined');
+            expect(() => signatureService.generateHmacSignature(null)).to.throw('Payload cannot be null or undefined');
+            expect(() => signatureService.generateHmacSignature(undefined)).to.throw('Payload cannot be null or undefined');
         });
 
-        it('should throw an error if secret is null or undefined', () => {
-            const payload = {foo: 'bar'};
-            expect(() => generateHmacSignature(payload, null as any)).to.throw('Secret cannot be null or undefined');
-            expect(() => generateHmacSignature(payload, undefined as any)).to.throw('Secret cannot be null or undefined');
-        });
     });
 
     describe('verifyHmacSignature', () => {
         it('should return true for a valid signature', () => {
             const payload = {foo: 'bar'};
-            const signature = generateHmacSignature(payload, secret);
+            const signature = signatureService.generateHmacSignature(payload);
 
-            const isValid = verifyHmacSignature(payload, signature, secret);
+            const isValid = signatureService.verifyHmacSignature(payload, signature);
 
             expect(isValid).to.be.true;
         });
@@ -39,23 +40,34 @@ describe('HMAC Service', () => {
             const payload = {foo: 'bar'};
             const invalidSignature = 'invalidsignature';
 
-            const isValid = verifyHmacSignature(payload, invalidSignature, secret);
+            const isValid = signatureService.verifyHmacSignature(payload, invalidSignature);
 
             expect(isValid).to.be.false;
         });
 
         it('should throw an error if signature is null, undefined, or not a string', () => {
             const payload = {foo: 'bar'};
-            expect(() => verifyHmacSignature(payload, null as any, secret)).to.throw('Signature must be a non-empty string');
-            expect(() => verifyHmacSignature(payload, undefined as any, secret)).to.throw('Signature must be a non-empty string');
-        });
-
-        it('should throw an error if secret is null or undefined', () => {
-            const payload = {foo: 'bar'};
-            const signature = generateHmacSignature(payload, secret);
-
-            expect(() => verifyHmacSignature(payload, signature, null as any)).to.throw('Secret cannot be null or undefined');
-            expect(() => verifyHmacSignature(payload, signature, undefined as any)).to.throw('Secret cannot be null or undefined');
+            expect(() => signatureService.verifyHmacSignature(payload, null as any)).to.throw('Signature must be a non-empty string');
+            expect(() => signatureService.verifyHmacSignature(payload, undefined as any)).to.throw('Signature must be a non-empty string');
         });
     });
+
+    describe('setAlgorithm', () => {
+        class MockAlgorithm implements HashAlgorithm {
+            hash(payload: string): string {
+                return "";
+            }
+        }
+
+        it('should set a new encryption algorithm', () => {
+            const mockAlgorithm = new MockAlgorithm();
+
+            signatureService.setAlgorithm(mockAlgorithm);
+
+            const obj = {foo: 'bar'};
+            const res = signatureService.generateHmacSignature(obj);
+
+            expect(res).to.equal("");
+        });
+    })
 });

@@ -12,11 +12,8 @@ type DecryptedObject = {
  * Service for encrypting and decrypting objects using a specified algorithm.
  */
 export class EncryptionService {
-    private algorithm: EncryptionAlgorithm;
 
-    constructor(algorithm: EncryptionAlgorithm) {
-        this.algorithm = algorithm;
-    }
+    constructor(private algorithm: EncryptionAlgorithm) {}
 
     /**
      * Sets a new encryption algorithm.
