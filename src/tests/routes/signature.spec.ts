@@ -20,6 +20,13 @@ describe('Signature API', () => {
             expect(res.body.signature).to.equal(expectedSignature);
         });
 
+        it('should return 400 Bad Request when payload is missing', async () => {
+            const res = await request(app).post('/sign');
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
+        });
+
         it('should return status 400 if request body is empty for /sign endpoint', async () => {
             const payload = {};
 
@@ -29,12 +36,6 @@ describe('Signature API', () => {
             expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
         });
 
-        it('should return status 400 if request has no body for /sign endpoint', async () => {
-            const res = await request(app).post('/sign');
-
-            expect(res.status).to.equal(400);
-            expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
-        });
 
         it('should return status 400 if request is not an object for /sign endpoint', async () => {
             const payload = 'not an object';
@@ -74,6 +75,13 @@ describe('Signature API', () => {
             expect(res.status).to.equal(400);
         });
 
+        it('should return status 400 if request body has no payload for /verify endpoint', async () => {
+            const res = await request(app).post('/verify');
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
+        });
+
         it('should return status 400 if request body is empty for /verify endpoint', async () => {
             const payload = {};
 
@@ -99,6 +107,28 @@ describe('Signature API', () => {
             const payload = {
                 signature: 'validSignature', // Valid signature
                 data: 'not an object'        // Invalid data type
+            };
+
+            const res = await request(app).post('/verify').send(payload);
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
+        });
+
+        it('should return status 400 if there is no signature for /verify endpoint', async () => {
+            const payload = {
+                data: { foo: "bar"}
+            };
+
+            const res = await request(app).post('/verify').send(payload);
+
+            expect(res.status).to.equal(400);
+            expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
+        });
+
+        it('should return status 400 if there is no data for /verify endpoint', async () => {
+            const payload = {
+                signature: 'validSignature',
             };
 
             const res = await request(app).post('/verify').send(payload);

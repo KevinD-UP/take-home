@@ -27,6 +27,15 @@ describe('Encryption API', () => {
         expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
     });
 
+    it('should return status 400 if request body is empty for /encrypt endpoint', async () => {
+        const payload = {};
+
+        const res = await request(app).post('/encrypt').send(payload);
+
+        expect(res.status).to.equal(400);
+        expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
+    });
+
     it('should return 400 Bad Request when payload is not an object', async () => {
         const payload = 'not an object';
 
@@ -48,6 +57,13 @@ describe('Encryption API', () => {
         expect(res.body).to.have.property('foo', 'foobar');
         expect(res.body).to.have.property('bar');
         expect(res.body.bar).to.be.deep.equal({isBar: true});
+    });
+
+    it('should return 400 Bad Request when payload is missing', async () => {
+        const res = await request(app).post('/decrypt');
+
+        expect(res.status).to.equal(400);
+        expect(res.body).to.have.property('errors').that.is.an('array').and.not.empty;
     });
 
     it('should return status 400 if request body is empty', async () => {

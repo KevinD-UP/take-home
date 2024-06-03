@@ -26,6 +26,7 @@ export class EncryptionService {
 
     /**
      * Encrypts every value in the object.
+     * Assumes `obj` has been validated at the route level.
      * @param obj - The object to encrypt.
      * @returns The encrypted object.
      */
@@ -39,6 +40,7 @@ export class EncryptionService {
 
     /**
      * Decrypts every value in the object.
+     * Assumes `obj` has been validated at the route level.
      * @param obj - The encrypted object.
      * @returns The decrypted object.
      */
