@@ -1,6 +1,7 @@
 import {HashAlgorithm} from "./hashAlgorithm";
 
-type Payload = any;
+export type Payload = Record<string, any>;
+export type verifyHmacSignatureArg = { signature: string, data: Payload, }
 
 export class SignatureService {
 
@@ -30,16 +31,15 @@ export class SignatureService {
     /**
      * Verify if the given signature matches the expected HMAC signature for the payload and secret.
      * @param {Payload} payload - The payload to verify the signature for.
-     * @param {string} signature - The signature to verify.
      * @returns {boolean} - True if the signature is valid, false otherwise.
      * @throws {Error} - If the signature or secret is null, undefined, or not a non-empty string.
      */
-    verifyHmacSignature = (payload: Payload, signature: string): boolean => {
-        if (!signature) {
+    verifyHmacSignature = (payload: verifyHmacSignatureArg): boolean => {
+        if (!payload.signature) {
             throw new Error('Signature must be a non-empty string');
         }
-        const expectedSignature = this.generateHmacSignature(payload);
-        return expectedSignature === signature;
+        const expectedSignature = this.generateHmacSignature(payload.data);
+        return expectedSignature === payload.signature;
     };
 }
 

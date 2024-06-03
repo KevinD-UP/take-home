@@ -1,10 +1,10 @@
 import {EncryptionAlgorithm} from "./encryptionAlgorithm";
 
-type EncryptedObject = {
+export type EncryptedObject = {
     [key: string]: string;
 };
 
-type DecryptedObject = {
+export type DecryptedObject = {
     [key: string]: any;
 };
 

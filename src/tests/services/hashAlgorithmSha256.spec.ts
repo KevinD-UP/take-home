@@ -9,7 +9,7 @@ describe('HashAlgorithmSha256', () => {
     });
 
     it('should hash the given data using SHA-256 algorithm', () => {
-        const payload = 'example_payload';
+        const payload = {foo: 'example_payload'};
         const secret = 'mysecret';
 
         // Call the hash method

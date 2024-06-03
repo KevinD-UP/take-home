@@ -1,7 +1,6 @@
 import {expect} from 'chai';
-import {SignatureService} from '../../services/signatureService';
+import {Payload, SignatureService} from '../../services/signatureService';
 import {HashAlgorithm, HashAlgorithmSha256} from "../../services/hashAlgorithm";
-import {EncryptionAlgorithm} from "../../services/encryptionAlgorithm";
 
 describe('HMAC Service', () => {
     let signatureService: SignatureService;
@@ -20,8 +19,8 @@ describe('HMAC Service', () => {
         });
 
         it('should throw an error if payload is null or undefined', () => {
-            expect(() => signatureService.generateHmacSignature(null)).to.throw('Payload cannot be null or undefined');
-            expect(() => signatureService.generateHmacSignature(undefined)).to.throw('Payload cannot be null or undefined');
+            expect(() => signatureService.generateHmacSignature(null as any)).to.throw('Payload cannot be null or undefined');
+            expect(() => signatureService.generateHmacSignature(undefined as any)).to.throw('Payload cannot be null or undefined');
         });
 
     });
@@ -31,7 +30,7 @@ describe('HMAC Service', () => {
             const payload = {foo: 'bar'};
             const signature = signatureService.generateHmacSignature(payload);
 
-            const isValid = signatureService.verifyHmacSignature(payload, signature);
+            const isValid = signatureService.verifyHmacSignature({signature, data: payload});
 
             expect(isValid).to.be.true;
         });
@@ -40,21 +39,21 @@ describe('HMAC Service', () => {
             const payload = {foo: 'bar'};
             const invalidSignature = 'invalidsignature';
 
-            const isValid = signatureService.verifyHmacSignature(payload, invalidSignature);
+            const isValid = signatureService.verifyHmacSignature({signature: invalidSignature, data: payload});
 
             expect(isValid).to.be.false;
         });
 
         it('should throw an error if signature is null, undefined, or not a string', () => {
             const payload = {foo: 'bar'};
-            expect(() => signatureService.verifyHmacSignature(payload, null as any)).to.throw('Signature must be a non-empty string');
-            expect(() => signatureService.verifyHmacSignature(payload, undefined as any)).to.throw('Signature must be a non-empty string');
+            expect(() => signatureService.verifyHmacSignature({signature: null as any, data: payload})).to.throw('Signature must be a non-empty string');
+            expect(() => signatureService.verifyHmacSignature({signature: undefined as any, data: payload})).to.throw('Signature must be a non-empty string');
         });
     });
 
     describe('setAlgorithm', () => {
         class MockAlgorithm implements HashAlgorithm {
-            hash(payload: string): string {
+            hash(payload: Payload): string {
                 return "";
             }
         }
