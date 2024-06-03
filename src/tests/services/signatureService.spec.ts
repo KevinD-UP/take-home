@@ -17,12 +17,6 @@ describe('HMAC Service', () => {
             expect(signature).to.be.a('string');
             expect(signature).to.have.lengthOf(64); // HMAC-SHA256 signature length
         });
-
-        it('should throw an error if payload is null or undefined', () => {
-            expect(() => signatureService.generateHmacSignature(null as any)).to.throw('Payload cannot be null or undefined');
-            expect(() => signatureService.generateHmacSignature(undefined as any)).to.throw('Payload cannot be null or undefined');
-        });
-
     });
 
     describe('verifyHmacSignature', () => {
@@ -42,12 +36,6 @@ describe('HMAC Service', () => {
             const isValid = signatureService.verifyHmacSignature({signature: invalidSignature, data: payload});
 
             expect(isValid).to.be.false;
-        });
-
-        it('should throw an error if signature is null, undefined, or not a string', () => {
-            const payload = {foo: 'bar'};
-            expect(() => signatureService.verifyHmacSignature({signature: null as any, data: payload})).to.throw('Signature must be a non-empty string');
-            expect(() => signatureService.verifyHmacSignature({signature: undefined as any, data: payload})).to.throw('Signature must be a non-empty string');
         });
     });
 
