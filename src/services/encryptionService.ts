@@ -1,4 +1,5 @@
 import {EncryptionAlgorithm} from "./encryptionAlgorithm";
+import {Payload} from "./signatureService";
 
 export type EncryptedObject = {
     [key: string]: string;
@@ -28,7 +29,7 @@ export class EncryptionService {
      * @param obj - The object to encrypt.
      * @returns The encrypted object.
      */
-    encryptObject = (obj: any): EncryptedObject => {
+    encryptObject = (obj: Payload): EncryptedObject => {
         const encryptedObj: EncryptedObject = {};
         Object.entries(obj).forEach(([key, value]) => {
             encryptedObj[key] = this.algorithm.encrypt(JSON.stringify(value));
