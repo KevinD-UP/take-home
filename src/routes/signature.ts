@@ -1,11 +1,10 @@
 import {Request, Response, Router} from "express";
-import {generateHmacSignature, verifyHmacSignature} from "../services/signatureService";
+import {SignatureService} from "../services/signatureService";
+import {HashAlgorithmSha256} from "../services/hashAlgorithm";
 
 // Router for signature-related endpoints
 export const signatureRouter = Router();
-
-// Secret key used for generating and verifying HMAC signatures
-const secretKey = 'mysecret';
+const signatureService = new SignatureService(new HashAlgorithmSha256())
 
 /**
  * POST /sign
@@ -15,7 +14,7 @@ const secretKey = 'mysecret';
  */
 signatureRouter.post('/sign', (req: Request, res: Response) => {
     // Generate HMAC signature for the request body
-    const signature = generateHmacSignature(req.body, secretKey);
+    const signature = signatureService.generateHmacSignature(req.body);
     res.json({signature});
 });
 
@@ -29,7 +28,7 @@ signatureRouter.post('/verify', (req: Request, res: Response) => {
     const {signature, data} = req.body;
 
     // Verify HMAC signature for the request body
-    if (verifyHmacSignature(data, signature, secretKey)) {
+    if (signatureService.verifyHmacSignature(data, signature)) {
         // If signature is valid, send a 204 (No Content) response
         res.sendStatus(204);
     } else {
