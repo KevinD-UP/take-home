@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {SignatureService} from '../../services/signatureService';
-import {HashAlgorithmSha256} from "../../services/hashAlgorithm";
+import {HashAlgorithm, HashAlgorithmSha256} from "../../services/hashAlgorithm";
+import {EncryptionAlgorithm} from "../../services/encryptionAlgorithm";
 
 describe('HMAC Service', () => {
     let signatureService: SignatureService;
@@ -50,4 +51,23 @@ describe('HMAC Service', () => {
             expect(() => signatureService.verifyHmacSignature(payload, undefined as any)).to.throw('Signature must be a non-empty string');
         });
     });
+
+    describe('setAlgorithm', () => {
+        class MockAlgorithm implements HashAlgorithm {
+            hash(payload: string): string {
+                return "";
+            }
+        }
+
+        it('should set a new encryption algorithm', () => {
+            const mockAlgorithm = new MockAlgorithm();
+
+            signatureService.setAlgorithm(mockAlgorithm);
+
+            const obj = {foo: 'bar'};
+            const res = signatureService.generateHmacSignature(obj);
+
+            expect(res).to.equal("");
+        });
+    })
 });

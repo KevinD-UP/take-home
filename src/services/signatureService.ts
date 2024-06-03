@@ -7,6 +7,14 @@ export class SignatureService {
     constructor(private hashAlgorithm: HashAlgorithm) {}
 
     /**
+     * Sets a new hash algorithm.
+     * @param algorithm - The new encryption algorithm to use.
+     */
+    setAlgorithm(algorithm: HashAlgorithm) {
+        this.hashAlgorithm = algorithm;
+    }
+
+    /**
      * Generate HMAC signature for the given payload and secret.
      * @param {Payload} payload - The payload to generate the signature for.
      * @returns {string} - The HMAC signature.
